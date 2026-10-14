@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>學苑課務查閱</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600&family=Noto+Sans+TC:wght@400;600;700&display=swap">
+<style>
+/* Layout: follows the academy's 正念音檔入口 page — sand banner header with logo, centered serif hero, white list cards on warm paper, sage bands, indigo closing, dark footer. Phone-first single column, fixed bottom tabs. Deliberately single (light) theme to match the academy's printed look. */
+:root{
+  color-scheme:light;
+  --bg:#f7f4ee; --surface:#ffffff; --ink:#22333b; --muted:#6e7c81; --faint:#97a3a6; --line:rgba(34,51,59,.1);
+  --blue:#273d50; --sage:#879b8b; --sage-deep:#6f8578; --blue-soft:#eef2ec; --band:#e7ede6; --banner:#b5a994; --cream:#fffaf0;
+  --gold:#a8843e; --gold-soft:#f6ecd6; --warn:#9a5b3c; --warn-soft:#f6e9e1;
+  --serif:"Songti TC","Noto Serif TC","PMingLiU",serif;
+  --sans:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
+  --nav-h:48px;--hdr-h:104px; --radius:16px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15.5px;line-height:1.75;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+a{color:var(--sage-deep)}
+button,a{-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--sage);outline-offset:2px;border-radius:6px}
+
+/* header banner */
+.site-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--banner)}
+.nav{width:min(calc(100% - 32px),560px);min-height:56px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand-logo{display:block;width:124px;height:auto}
+.nav-pill{padding:6px 13px;border:1px solid rgba(255,250,240,.5);border-radius:999px;color:var(--cream);font-size:13px;text-decoration:none;white-space:nowrap}
+.nav-pill:active{background:rgba(255,255,255,.16)}
+
+.wrap{max-width:560px;margin:0 auto;padding-inline:16px;padding-block:0 48px}
+
+/* hero */
+header.top{text-align:center;padding-block:40px 28px;display:grid;gap:6px;border-bottom:1px solid var(--line);margin-bottom:30px}
+.eyebrow{margin:0;color:var(--sage-deep);font-size:12px;font-weight:700;letter-spacing:.22em;text-indent:.22em}
+h1{margin:0;color:var(--blue);font-family:var(--serif);font-size:36px;font-weight:600;letter-spacing:.04em;line-height:1.25;text-wrap:balance}
+.sub{margin:4px 0 0;color:var(--muted);font-size:14px}
+
+.panel{display:grid;gap:34px}
+h2{margin:0;color:var(--blue);font-family:var(--serif);font-size:19px;font-weight:600;line-height:1.4;text-wrap:balance}
+h3{margin:0;color:var(--blue);font-size:15px;font-weight:650}
+.sec{display:grid;gap:13px}
+.sec-head{display:grid;gap:2px;padding-left:2px}
+.sec-head p{margin:0;color:var(--muted);font-size:13.5px}
+.band{background:var(--band);box-shadow:0 0 0 100vmax var(--band);clip-path:inset(0 -100vmax);padding-block:30px}
+
+/* link list (track-list style) */
+.links{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.links li+li{border-top:1px solid var(--line)}
+.link{display:grid;grid-template-columns:1fr auto;gap:2px 14px;align-items:center;padding:15px 16px;text-decoration:none;color:var(--ink);min-height:64px}
+.link:active{background:#f6f8f5}
+.link .t{font-weight:650;font-size:15.5px;line-height:1.5}
+.link .d{grid-column:1;color:var(--faint);font-size:13px;line-height:1.55}
+.link .arr{grid-row:1/span 2;grid-column:2;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:var(--blue-soft);color:var(--sage-deep);font-size:15px}
+.link:active .arr{background:var(--blue);color:#fff}
+.link.off{opacity:.6}
+.tag{display:inline-block;font-size:11.5px;font-weight:600;padding:1px 9px;border-radius:99px;margin-left:6px;vertical-align:2px;letter-spacing:.02em}
+.tag.gold{background:var(--gold-soft);color:var(--gold)}
+.tag.blue{background:var(--blue-soft);color:var(--sage-deep)}
+.tag.grey{background:#efede8;color:var(--muted)}
+.code-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:0 16px 15px}
+
+.code-label{font-size:13.5px;color:var(--muted)}
+#pass{user-select:all;display:inline-flex;align-items:center;height:26px;padding:0 10px;background:#efede8;border:1px solid var(--line);border-radius:6px;font-weight:700;color:var(--ink)}
+.code-label{display:inline-flex;align-items:center}
+.code-label b{color:var(--ink);font-weight:700}
+.btn-copy{border:0;background:var(--gold-soft);color:var(--gold);border-radius:99px;height:26px;padding:0 12px;font-size:12.5px;font-weight:600;display:inline-flex;align-items:center}
+.btn-copy:active{opacity:.85}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn-sm{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 14px;font-size:13px;color:var(--blue);font-weight:600}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;display:grid;gap:10px}
+.kv{display:grid;grid-template-columns:5.2em 1fr;gap:8px 12px;margin:0;font-size:14px}
+.kv dt{color:var(--sage-deep);font-weight:600}
+.kv dd{margin:0;min-width:0}
+.note{background:var(--blue-soft);border-radius:12px;padding:12px 14px;font-size:13.5px;line-height:1.7}
+.band .note{background:var(--surface)}
+.note.warn{background:var(--warn-soft)}
+.band .note.gold,.note.gold{background:var(--gold-soft);display:grid;gap:10px}
+.note.gold b{color:#7a5d24}
+.note-link{justify-self:start;font-weight:600;color:#7a5d24;text-decoration:none;border-bottom:1px solid rgba(122,93,36,.35);padding-bottom:1px}
+.note b{font-weight:700;color:var(--blue)}
+.note.warn b{color:var(--warn)}
+ul.plain{margin:0;padding-left:1.2em;display:grid;gap:4px}
+
+.intro{margin:0;font-size:15px;line-height:1.8}
+.intro b{color:var(--blue)}
+.cert.acc .n{font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.04em;background:var(--blue);color:#fff}
+.cert-group{display:grid;gap:16px;padding-top:6px}
+.cert-title{display:grid;grid-template-columns:48px 1fr;gap:14px;align-items:center;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.cert-title .n{width:48px;height:48px;display:grid;place-items:center;border-radius:50%;background:var(--gold-soft);color:var(--gold);font-family:var(--serif);font-size:22px}
+.cert-title .n.acc{background:var(--blue);color:#fff;font-family:var(--sans);font-size:13px;font-weight:700;letter-spacing:.04em}
+.cert-title h2{font-size:23px;line-height:1.35}
+.eyebrow-l{margin:0;color:var(--sage-deep);font-size:12px;font-weight:700;letter-spacing:.16em}
+.sec.sub{gap:10px}
+.sec.sub h3{font-family:var(--serif);font-size:17px;font-weight:600;color:var(--blue)}
+.checks li{display:grid;grid-template-columns:22px 1fr;gap:12px;padding:12px 16px;align-items:start}
+.checks .ci{width:22px;height:22px;margin-top:2px;display:grid;place-items:center;border-radius:50%;background:var(--blue-soft);color:var(--sage-deep);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.ck-link{display:inline-block;margin-top:6px;font-size:13px;font-weight:500;color:#555f63;background:var(--blue-soft);padding:3px 12px;border-radius:99px;text-decoration:none}
+.ck-link.off{color:var(--faint);background:#f1efea;font-weight:500}
+.stages .stg{display:grid;grid-template-columns:32px 1fr;gap:12px;padding:13px 16px;align-items:start}
+.stages .sn{width:32px;height:32px;display:grid;place-items:center;border-radius:50%;background:var(--blue-soft);color:var(--sage-deep);font-family:var(--serif);font-size:15px}
+.stages .now .sn{background:var(--blue);color:#fff}
+.stages .sc{display:grid;line-height:1.55;min-width:0}
+.stages .sc b{font-weight:650}
+.stages .sc small{color:var(--sage-deep);font-size:12.5px;font-variant-numeric:tabular-nums}
+.stages .sc span:last-child{color:var(--faint);font-size:13px}
+a.cert{text-decoration:none;color:var(--ink)}
+.cert .go{display:block;margin-top:4px;font-size:12.5px;font-weight:600;color:var(--blue)}
+.ck-link{justify-self:start}
+.band-coffee{background:#e9dfcf;box-shadow:0 0 0 100vmax #e9dfcf}
+.band-ivory{background:#fdfbf7;box-shadow:0 0 0 100vmax #fdfbf7}
+.band-ivory .note{background:var(--blue-soft)}
+.band + .band{margin-top:-34px}
+.faq-link{justify-self:start;display:inline-flex;align-items:center;gap:4px;font-size:13.5px;font-weight:600;color:var(--sage-deep);text-decoration:none;border-bottom:1px solid rgba(111,133,120,.4);padding-bottom:1px}
+.card .part{display:grid;gap:8px;border-top:1px solid var(--line);padding-top:12px;margin-top:4px}
+.faq-link{margin-top:2px}
+/* schedule */
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.stage summary{list-style:none;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:15px 16px;cursor:pointer}
+.stage summary::-webkit-details-marker{display:none}
+.stage .num{width:38px;height:38px;display:grid;place-items:center;border-radius:50%;background:var(--blue-soft);font-family:var(--serif);font-size:17px;color:var(--sage-deep)}
+.stage[open] .num{background:var(--blue);color:#fff}
+.stage .st{display:grid;line-height:1.5;min-width:0}
+.stage .st b{font-weight:650;font-size:15.5px}
+.stage .st span{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.stage .chev{color:var(--faint);transition:transform .2s}
+.stage[open] .chev{transform:rotate(180deg)}
+.stage .body{padding:0 16px 16px;display:grid;gap:10px}
+.rows{list-style:none;margin:0;padding:0;display:grid}
+.rows li{display:grid;grid-template-columns:3.4em 1fr;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:14px}
+.rows .dt{font-variant-numeric:tabular-nums;color:var(--sage-deep);font-weight:600}
+.rows .tp b{font-weight:600}
+.rows .tp small{display:block;color:var(--faint);font-size:12.5px;line-height:1.55}
+.done{font-size:11.5px;color:var(--faint);font-weight:400}
+
+.namebox{display:grid;gap:8px}
+.namebox label{font-size:13.5px;color:var(--muted)}
+.namebox input{width:100%;font:inherit;font-size:16px;padding:11px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink)}
+.mine{font-size:13.5px;background:var(--surface);border-radius:12px;padding:10px 14px}
+.sup{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.sup>li{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:13px 16px;display:grid;gap:6px}
+.sup .date{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.sup .date b{font-family:var(--serif);font-weight:600;font-size:18px;color:var(--blue);font-variant-numeric:tabular-nums}
+.sup .date span{font-size:12px;color:var(--sage-deep);background:var(--blue-soft);padding:1px 10px;border-radius:99px;font-weight:600}
+.pair{display:grid;grid-template-columns:3.2em 1fr;gap:8px;font-size:14.5px;align-items:baseline}
+.pair .k{color:var(--faint);font-size:12.5px}
+.pair .who{min-width:0}
+.pair .who em{font-style:normal;font-weight:600}
+.pair .who .r{color:var(--faint);font-size:12px;margin:0 6px}
+.hl{background:var(--gold-soft);color:var(--ink);padding:0 5px;border-radius:4px}
+.sup li.other{background:transparent;border-style:dashed;color:var(--muted)}
+
+.sup li.ev{background:var(--gold-soft);border-color:transparent}
+.sup li.ev .date span{background:var(--surface);color:var(--gold)}
+.sup .evt{font-weight:650;font-size:15px}
+.sup .evd{font-size:13px;color:var(--muted)}
+.sup .date span.off{background:#efede8;color:var(--muted)}
+/* checklist */
+.checks{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.checks li+li{border-top:1px solid var(--line)}
+.checks label{display:grid;grid-template-columns:22px 1fr;gap:12px;padding:14px 16px;cursor:pointer;align-items:start}
+.checks input{width:20px;height:20px;margin:3px 0 0;accent-color:var(--sage-deep)}
+.checks .t{font-weight:700;color:var(--blue)}
+.checks .d{display:block;color:var(--faint);font-size:13px;line-height:1.55}
+.checks .key{font-size:11px;color:var(--gold);background:var(--gold-soft);padding:0 7px;border-radius:99px;margin-left:6px;vertical-align:2px;font-weight:600}
+.checks input:checked + span .t{text-decoration:line-through;text-decoration-color:var(--faint);color:var(--muted)}
+.progress{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{flex:1;height:6px;background:#e6e2d9;border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--sage-deep);width:0;transition:width .3s}
+
+.certs{display:grid;gap:8px}
+.cert{display:grid;grid-template-columns:38px 1fr;gap:12px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px}
+.cert .n{width:38px;height:38px;display:grid;place-items:center;border-radius:50%;background:var(--gold-soft);font-family:var(--serif);font-size:17px;color:var(--gold)}
+.cert b{font-weight:650}
+.cert small{display:block;color:var(--faint);font-size:12.5px;line-height:1.55}
+.flow{text-align:center;color:var(--sage-deep);font-size:12.5px;margin:0}
+
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th,.tbl td{text-align:left;padding:9px 6px;border-top:1px solid var(--line);vertical-align:top}
+.tbl th{color:var(--sage-deep);font-weight:600;font-size:12.5px;border-top:0}
+.tbl td:first-child{white-space:nowrap;font-weight:600}
+.yes{color:var(--sage-deep);font-weight:700}
+td.yes,td.no{white-space:nowrap}
+.no{color:var(--warn);font-weight:700}
+.scroll{overflow-x:auto}
+
+/* faq */
+.search{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--hdr-h));z-index:3;background:var(--bg);padding-block:8px 10px;display:grid;gap:10px}
+.search input{width:100%;font:inherit;font-size:16px;padding:12px 18px;border:1px solid var(--line);border-radius:99px;background:var(--surface);color:var(--ink)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;min-height:36px;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 15px;font-size:13.5px;color:var(--blue);font-weight:600}
+.chip[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+.faq{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.faq details{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.faq summary{list-style:none;cursor:pointer;padding:13px 16px;display:grid;grid-template-columns:1fr auto;gap:10px;font-weight:600}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--sage-deep);font-weight:400;font-size:18px;line-height:1.4}
+.faq details[open] summary::after{content:"−"}
+.faq .a{padding:0 16px 14px;font-size:14.5px;color:var(--ink)}
+.faq .ref{display:block;color:var(--faint);font-size:12px;margin-top:4px}
+.faq mark{background:var(--gold-soft);color:inherit;border-radius:3px}
+.empty{color:var(--muted);text-align:center;padding:24px 0;font-size:14px}
+
+/* closing + footer */
+.closing{padding-block:52px;padding-inline:20px;background:var(--blue);color:#fff;text-align:center}
+.closing h2{color:#fff;font-size:22px;margin-bottom:14px;line-height:1.5}
+.closing p{max-width:460px;margin:0 auto 8px;color:rgba(255,255,255,.75);font-size:14px;text-wrap:balance}
+.closing cite{display:block;margin-top:12px;font-style:normal;color:rgba(255,255,255,.55);font-size:13px}
+footer{padding-inline:20px;padding-block:30px calc(36px + env(safe-area-inset-bottom,0px));background:#1f3038;font-size:12.5px;text-align:center;color:rgba(255,255,255,.55)}
+.footer-logo{width:42px;height:auto;margin:0 auto 10px;opacity:.85;display:block}
+.footer-academy{margin-bottom:6px;color:rgba(255,255,255,.82);font-weight:650;letter-spacing:.04em}
+footer p{margin:2px 0}
+
+/* top tabs */
+nav.tabs{background:var(--surface);border-bottom:1px solid var(--line);box-shadow:0 4px 14px rgba(34,51,59,.05)}
+nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);height:var(--nav-h);padding-inline:4px}
+nav.tabs button{position:relative;border:0;background:none;display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;color:var(--muted);font-weight:600}
+nav.tabs svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+nav.tabs button[aria-selected="true"]{color:var(--blue);font-weight:700}
+nav.tabs button[aria-selected="true"]::after{content:"";position:absolute;left:22%;right:22%;bottom:0;height:3px;border-radius:3px 3px 0 0;background:var(--gold)}
+@media (max-width:360px){nav.tabs svg{display:none}}
+
+/* ===== unified design system (overrides) =====
+   Titles: page h1 36 serif / section h2 19 serif / cert group 23 serif / in-card h3 15 sans bold — all indigo.
+   Item titles in lists: 15px bold indigo. Body in cards: 14px ink. Secondary text: 13px muted. Labels (dt, dates): sage-deep 600.
+   Links: sage underline (faq-link) in white cards, gold underline in gold notes, grey pill for form links in the 7 conditions. */
+.sec.sub h3{font-size:19px;line-height:1.4}
+.link .t,.checks .t,.stages .sc b,.cert b,.sup .evt,.rows .tp b{font-size:15px;font-weight:700;color:var(--blue);line-height:1.5}
+.link .d,.checks .d,.stages .sc span:last-child,.rows .tp small,.cert small{color:var(--muted);font-size:13px;line-height:1.6}
+.stages .sc small{font-size:12.5px}
+.pair .k,.pair .who .r{color:var(--muted)}
+.faq .a{font-size:14px;line-height:1.75}
+.faq .ref{color:var(--muted)}
+.card{padding:16px}
+.kv,.rows li,.card ul.plain{font-size:14px;line-height:1.7}
+.sup .evd{color:var(--muted)}
+.cert .go{color:var(--sage-deep);font-weight:600;font-size:13px;text-decoration:underline;text-decoration-color:rgba(111,133,120,.4);text-underline-offset:3px}
+.rows li:first-child{border-top:0}
+.note{font-size:13.5px;line-height:1.7}
+.intro{font-size:15px}
+.panel > .band:last-child,.panel > .cert-group:last-child > .band:last-child{margin-bottom:-48px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="nav">
+    <img class="brand-logo" src="data:image/png;base64,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" alt="內在轉化教練學苑 Turn Within Coaching Academy">
+    <a class="nav-pill" href="https://classroom.google.com/w/ODYwNDQxMzkwMTk1/t/all" target="_blank" rel="noopener">手冊與回放</a>
+  </div>
+<nav class="tabs" aria-label="分頁">
+  <div class="in" role="tablist">
+    <button role="tab" data-tab="links" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>連結</button>
+    <button role="tab" data-tab="schedule" aria-selected="false"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>課表</button>
+    <button role="tab" data-tab="path" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M5 19c3-1 4-4 7-4s4 3 7 4"/><circle cx="12" cy="8" r="3.5"/><path d="M12 11.5V15"/></svg>結業</button>
+    <button role="tab" data-tab="acc" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="5.5"/><path d="M8.6 13.4 7.5 21l4.5-2.6 4.5 2.6-1.1-7.6"/></svg>ACC</button>
+    <button role="tab" data-tab="faq" aria-selected="false"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></svg>問答</button>
+  </div>
+</nav>
+</header>
+
+<div class="wrap">
+  <header class="top">
+    <p class="eyebrow" id="peye">LINKS</p>
+    <h1 id="ptitle">常用連結</h1>
+    <p class="sub" id="psub">表單、回放、預約，都在這裡</p>
+  </header>
+
+  <!-- ============ 連結 ============ -->
+  <section class="panel" id="p-links" data-eye="LINKS" data-title="常用連結" data-sub="表單、回放、預約，都在這裡">
+    <div class="sec band">
+      <div class="sec-head"><h2>課務事項</h2></div>
+      <ul class="links">
+        <li><a class="link" href="https://classroom.google.com/w/ODYwNDQxMzkwMTk1/t/all" target="_blank" rel="noopener"><span class="t">手冊、投影片與回放</span><span class="d">Google Classroom。回放至少保存一年，可下載</span><span class="arr" aria-hidden="true">↗</span></a></li>
+        <li><a class="link" href="https://app.notion.com/p/baab733926b8835c84bf81018a4676ca?v=17fb733926b8833c9127085f3d6d3f06&source=copy_link" target="_blank" rel="noopener"><span class="t">課堂提問討論區</span><span class="d">Notion。課堂上沒問完的，留在這裡</span><span class="arr" aria-hidden="true">↗</span></a></li>
+        <li><a class="link" href="https://docs.google.com/spreadsheets/d/1Qg6XwdIbbYGVVz1_yV6c0D17LRbxvin2-Ujoy8laerc/edit?usp=sharing" target="_blank" rel="noopener"><span class="t">請假登記區</span><span class="d">沒到課、預計遲到超過 15 分鐘、需要早退，都請填。看完回放、上傳心得後回來勾「是」</span><span class="arr" aria-hidden="true">↗</span></a></li>
+      </ul>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><h2>第四階段表單</h2></div>
+      <ul class="links">
+        <li><a class="link" href="https://classroom.google.com/c/ODYwNDQxMzkwMTk1/m/ODczODUxNzk3ODM0/details" target="_blank" rel="noopener"><span class="t">教練對話觀察表</span><span class="d">團體督導時擔任觀察員使用</span><span class="arr" aria-hidden="true">↗</span></a></li>
+        <li><a class="link" href="https://docs.google.com/spreadsheets/d/1tUIk5dZQVrbtf_yLdLVmao74pRw40s9ICisUy1v_efw/edit?usp=sharing" target="_blank" rel="noopener"><span class="t">登記團體督導日期</span><span class="d">先填先得。配對結果也可以在「課表」分頁查</span><span class="arr" aria-hidden="true">↗</span></a></li>
+      </ul>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><h2>ICF 認證表單</h2></div>
+      <ul class="links">
+        <li><a class="link" href="https://classroom.google.com/c/ODYwNDQxMzkwMTk1/a/ODc4MDA5MDY3NTA0/details" target="_blank" rel="noopener"><span class="t">同儕對練記錄表<span class="tag gold">結業條件</span></span><span class="d">至少 6 次擔任教練並記錄。課程結束後需繳回</span><span class="arr" aria-hidden="true">↗</span></a></li>
+        <li><div class="link off"><span class="t">長期客戶記錄表<span class="tag grey">即將開放</span></span><span class="d">預計第四階段結束後提供，格式與繳交方式會在 LINE 群公告</span></div></li>
+      </ul>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><h2>預約教練</h2><p>被教練，是理解好的教練對話最快的方式</p></div>
+      <ul class="links">
+        <li>
+          <a class="link" href="https://www.notion.so/350b733926b8802c8387cb960f93aeef?source=copy_link" target="_blank" rel="noopener"><span class="t">學長姐的預約表單<span class="tag blue">免費一次</span></span><span class="d">第一屆已通過口試的學長姐，每一位都可以各預約一次免費體驗</span><span class="arr" aria-hidden="true">↗</span></a>
+          <div class="code-row"><span class="code-label">通關密碼：<b id="pass">轉化式教練</b></span><button class="btn-copy" type="button" id="copyPass">複製</button></div>
+        </li>
+        <li><a class="link" href="https://calendly.com/natashashihcoaching/natasha" target="_blank" rel="noopener"><span class="t">Natasha 一對一教練對話<span class="tag gold">12/31 前</span></span><span class="d">60 分鐘，一次真正屬於你的教練對話，不是督導。開放預約至 2026/12/31</span><span class="arr" aria-hidden="true">↗</span></a></li>
+      </ul>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><h2>其他</h2></div>
+      <ul class="links">
+        <li><a class="link" href="https://drive.google.com/file/d/108O7hcewSV8SetuzN8zTl4LanJsLSH8t/view?usp=sharing" target="_blank" rel="noopener"><span class="t">Cal.com 諮詢表單製作教學</span><span class="d">教學影片，免費版就夠用。感謝冠宇助教提供</span><span class="arr" aria-hidden="true">↗</span></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 課表 ============ -->
+  <section class="panel" id="p-schedule" data-eye="SCHEDULE" data-title="課表與督導" data-sub="每週二 11:00–13:30，Zoom 線上同步" hidden>
+    <div class="sec band">
+      <div class="sec-head"><h2>第四階段課表</h2><p>團體督導時，一位學員現場教練另一位學員，其餘的人是觀察員，對話結束後 Natasha 直接給回饋</p></div>
+      <ul class="sup" id="sup"></ul>
+      <div class="note gold">
+        <span><b>擔任教練的那一場，可以計入 100 小時。</b>擔任觀察員的堂次不計。每位學員教練與被教練的角色，各至少參與一次。</span>
+        <a class="note-link" href="https://docs.google.com/spreadsheets/d/1tUIk5dZQVrbtf_yLdLVmao74pRw40s9ICisUy1v_efw/edit?usp=sharing" target="_blank" rel="noopener">配對以原表單為準 ↗</a>
+      </div>
+    </div>
+
+    <div class="sec band">
+      <div class="sec-head"><h2>自由參加的活動</h2><p>不列入出席紀錄，有空歡迎一起來</p></div>
+      <ul class="sup">
+        <li><div class="date"><b>10/21</b><span>週三 12:00–13:30</span></div><div class="evt">ICF 認證講座</div></li>
+        <li><div class="date"><b>12/20</b><span>週日 13:00–17:00</span></div><div class="evt">學苑年會</div><div class="evd">會後晚餐自由參加，詳情見 LINE 群公告</div></li>
+      </ul>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><h2>第四階段還包含</h2></div>
+      <div class="card">
+        <ul class="rows" style="margin-block:-9px">
+          <li><span class="dt">三次</span><span class="tp"><b>一對一督導</b><small>與 Natasha 個別預約，三次都是口試機會。12/15 後一年內完成</small></span></li>
+          <li><span class="dt">一次</span><span class="tp"><b>結業對談</b><small>與 Natasha 個別預約</small></span></li>
+          <li><span class="dt">一堂</span><span class="tp"><b>ICF 倫理課＋ICF ACC 筆試工作坊</b><small>12/15 倫理課、12/22 筆試工作坊，週二同時段</small></span></li>
+          <li><span class="dt">四次</span><span class="tp"><b>客製化書面回饋</b><small>由 Natasha 提供，依 LINE 群公告</small></span></li>
+          <li><span class="dt">兩小時</span><span class="tp"><b>ICF 預錄課程</b><small>自行觀看，依 LINE 群公告</small></span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sec" id="prep">
+      <div class="sec-head"><h2>一對一督導與口試</h2></div>
+      <div class="card">
+        <dl class="kv">
+          <dt>跟誰約</dt><dd>Natasha，預約連結會在 LINE 群公告</dd>
+          <dt>幾次</dt><dd>三次，三次都是口試機會，任一次通過即可。三次都沒通過，可以加價補考</dd>
+          <dt>期限</dt><dd>12/15 後一年內完成，並橫跨至少三個月，三次不要擠在一起約</dd>
+          <dt>要準備</dt><dd>預約時間的前三天，寄出：
+            <ul class="plain" style="margin-top:4px">
+              <li>實作客戶的<b>錄音檔</b>，長度 20–60 分鐘</li>
+              <li>該次對話的<b>逐字稿</b>：可以用 AI 轉，但要自己全部看過，並分出說話者、帶時間標記</li>
+              <li>想特別提問的問題</li>
+            </ul></dd>
+        </dl>
+        <a class="faq-link" href="#faq" data-goto="faq" data-cat="課程與督導">看「課程與督導」相關問答 →</a>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ============ 結業 ============ -->
+  <section class="panel" id="p-path" data-eye="CERTIFICATION" data-title="結業路徑" data-sub="學苑頒發的兩張證書，與取得條件" hidden>
+    <div class="sec band">
+      <div class="sec-head"><h2>可以取得的證書</h2></div>
+      <p class="intro">本課程一共可以取得<b>兩張證書</b>。其中「ICF 課程結業證書」是申請「ICF ACC 專業教練認證」的<b>必要條件</b>。</p>
+      <div class="certs">
+        <div class="cert"><span class="n">①</span><div><b>正念認知生活結業證書</b><small>學苑頒發・第二階段</small></div></div>
+        <div class="cert"><span class="n">②</span><div><b>ICF 課程結業證書</b><small>學苑頒發・完成培訓</small></div></div>
+        <div class="flow">↓ 是申請下方認證的必要條件</div>
+        <a class="cert acc" href="#acc" data-goto="acc"><span class="n">ICF</span><div><b>ICF ACC 專業教練認證</b><small>ICF 國際教練聯盟頒發・需自行申請，沒有期限</small><span class="go">看申請條件 →</span></div></a>
+      </div>
+    </div>
+
+    <div class="sec band band-ivory">
+      <div class="sec-head"><h2>課程四個階段</h2><p>從臨在出發，透過正念深化，把臨在帶進對話，在 ICF 的框架裡整合</p></div>
+      <ul class="links stages">
+        <li><div class="stg"><span class="sn">一</span><span class="sc"><b>轉化式教練基礎</b><small>5/12 – 6/9・5 堂</small><span>親身體驗什麼是轉化式教練</span></span></div></li>
+        <li><div class="stg"><span class="sn">二</span><span class="sc"><b>正念認知生活</b><small>6/16 – 8/4・8 堂</small><span>培養穩定的覺察與臨在。完成可取得證書 ①</span></span></div></li>
+        <li><div class="stg"><span class="sn">三</span><span class="sc"><b>轉化式教練方法與技能</b><small>8/25 – 10/13・8 堂</small><span>學會在臨在中進行轉化式對話</span></span></div></li>
+        <li><div class="stg now"><span class="sn">四</span><span class="sc"><b>整合與認證<span class="tag gold">進行中</span></b><small>10/20 – 12/22・9 堂（10/27 停課）</small><span>透過團體督導與一對一督導，從學習者成為專業教練</span></span></div></li>
+      </ul>
+      <div class="note">第二階段上完，可取得證書 ①<br>四個階段完整上完，才能取得證書 ②</div>
+    </div>
+
+    <div class="cert-group">
+      <div class="cert-title"><span class="n">①</span><div><p class="eyebrow-l">證書一</p><h2>正念認知生活結業證書</h2></div></div>
+      <div class="card">
+        <dl class="kv">
+          <dt>頒發</dt><dd>學苑（牛津大學正念基金會 MBCT-L 課程）</dd>
+          <dt>條件</dt><dd>第二階段缺席不超過 2 次</dd>
+          <dt>時間</dt><dd>第二階段結束，出席達標即可取得</dd>
+        </dl>
+        <div class="note">這條規則不與一、三、四階的出席率合併計算。</div>
+      </div>
+    </div>
+
+    <div class="cert-group">
+      <div class="cert-title"><span class="n">②</span><div><p class="eyebrow-l">證書二</p><h2>ICF 課程結業證書</h2></div></div>
+    <div class="sec sub">
+      <div class="sec-head"><h3>需完成七項條件方可取得</h3></div>
+      <ul class="checks" id="checks"></ul>
+      <div class="note warn"><b>所有「Google Classroom 心得分享」必須在第四階段最後一堂課結束前補齊</b>，沒有補上就無法領取結業證書。</div>
+    </div>
+
+    <div class="sec sub band">
+      <div class="sec-head"><h3>出席說明</h3></div>
+      <div class="card">
+        <dl class="kv">
+          <dt>出席率</dt><dd>一、三、四階共 22 堂，需出席至少 80%（缺席不超過 10 小時／4 堂）</dd>
+          <dt>遲到</dt><dd>11:15 前到都不算遲到，安心進來就好</dd>
+          <dt>早退</dt><dd>13:30 準時下課離開不算早退</dd>
+          <dt>要請假</dt><dd>沒到課、預計遲到超過 15 分鐘、需提早離開，都請填<a href="https://docs.google.com/spreadsheets/d/1Qg6XwdIbbYGVVz1_yV6c0D17LRbxvin2-Ujoy8laerc/edit?usp=sharing" target="_blank" rel="noopener">請假登記區</a></dd>
+          <dt>補課</dt><dd>看該堂錄影，再繳交一份簡短心得。兩步都要做</dd>
+        </dl>
+        <div class="note warn"><b>看回放不算出席。</b>一、三、四階缺席超過 10 小時／4 堂，無法取得 ICF 課程結業證書（可於明年繳費補課）。</div>
+        <a class="faq-link" href="#faq" data-goto="faq" data-cat="出席與請假">看「出席與請假」相關問答 →</a>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <!-- ============ ACC ============ -->
+  <section class="panel" id="p-acc" data-eye="ICF ACC" data-title="ACC 認證" data-sub="ICF 國際教練聯盟的專業教練認證" hidden>
+    <div class="sec band">
+      <div class="sec-head"><h2>申請前要先有的</h2></div>
+      <div class="note gold"><span><b>必要條件：先取得「ICF 課程結業證書」。</b>ACC 沒有申請期限限制，由於每個人完成 100 小時與口試的時間不同，所以學院沒有代為辦理，請各自到 ICF 官網申請即可。</span><a class="note-link" href="#path" data-goto="path">看 ICF 課程結業證書的條件 →</a></div>
+    </div>
+    <div class="sec">
+      <div class="sec-head"><h2>取得 ACC 的五個條件</h2><p>完成培訓，就完成前三項。真正要自己完成的，是 100 小時和筆試</p></div>
+      <div class="card scroll">
+        <table class="tbl">
+          <thead><tr><th>條件</th><th>內容</th><th>狀態</th></tr></thead>
+          <tbody>
+            <tr><td>教練培訓</td><td>至少 60 小時</td><td class="yes">課程包含</td></tr>
+            <tr><td>教練督導</td><td>10 小時，橫跨至少 3 個月</td><td class="yes">課程包含</td></tr>
+            <tr><td>表現評估</td><td>提交一段 20–60 分鐘錄音對話</td><td class="yes">課程包含</td></tr>
+            <tr><td>實務時數</td><td>100 小時、至少 8 位客戶，其中至少 75 小時有償</td><td class="no">自行累積</td></tr>
+            <tr><td>ICF 筆試</td><td>60 題單選，學苑提供準備工作坊與考古題</td><td class="no">自行報名</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-head"><h2>100 小時怎麼算</h2><p>依 ICF 官網規定，2026/08 查核</p></div>
+      <div class="card">
+        <h3>基本規則</h3>
+        <dl class="kv">
+          <dt>起算</dt><dd>2026/5/12 開課日起。之前的對話不計，之後的同儕對練與對外客戶都算</dd>
+          <dt>計時</dt><dd>以實際時間計：60 分鐘＝1 小時，45 分鐘＝0.75 小時</dd>
+          <dt>形式</dt><dd>即時對話（面對面、電話、線上）。非同步文字教練不算</dd>
+          <dt>新鮮度</dt><dd>申請前 18 個月內，至少要有 25 小時</dd>
+        </dl>
+        <div class="part"><h3>哪些對話可以計入</h3>
+        <dl class="kv">
+          <dt>同儕對練</dt><dd>計入，沒有上限</dd>
+          <dt>對外客戶</dt><dd>計入</dd>
+          <dt>團體督導</dt><dd>擔任教練的那次計入，觀察員不計</dd>
+          <dt>不計入</dt><dd>自我教練；諮詢、顧問、教學、心理諮商；客戶取消或爽約的時段</dd>
+        </dl></div>
+        <div class="part"><h3>什麼算「有償」</h3>
+        <dl class="kv">
+          <dt>收費</dt><dd>即使只是一杯咖啡的金額，隨喜也算</dd>
+          <dt>同儕互換</dt><dd>同儕互相教練，用時間交換時間，或以服務、物品交換</dd>
+          <dt>交換回饋</dt><dd>請客戶提供可公開的教練體驗回饋</dd>
+        </dl></div>
+        <div class="note"><b>現在就開始記錄。</b>名單不用交給 ICF，但 ICF 會抽查，被抽到時要能提供客戶聯絡資訊。開始合作時，就先取得客戶同意保存資訊。</div>
+        <a class="faq-link" href="#faq" data-goto="faq" data-cat="認證與時數">看「認證與時數」相關問答 →</a>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-head"><h2>找客戶與開始接案</h2><p>「主動創造客戶」這件事本身，就是認證門檻的一部分</p></div>
+      <div class="card">
+        <h3>客戶從哪裡來</h3>
+        <dl class="kv">
+          <dt>同學對練</dt><dd>最穩定的一條路，計入有償且沒有上限</dd>
+          <dt>親友</dt><dd>身邊親友，以及親友的親友。需要勇氣開口，但願意的人通常比想像中多</dd>
+          <dt>FB 社團</dt><dd>到 ICF 或 coaching 相關社團找對練夥伴，用中文貼文就可以</dd>
+          <dt>學長姐</dt><dd>學長姐與未來的學弟妹，第三屆預計 2027 年開課</dd>
+          <dt>自己的社群</dt><dd>公開說「我正在累積教練時數」，是最快的一條路</dd>
+        </dl>
+        <div class="note">受訓中介紹自己，誠實寫「正在取得 ICF 認證中」就可以。還沒拿到 ACC，就不要寫 ACC。</div>
+        <div class="part"><h3>開始接客戶前的三件事</h3>
+        <dl class="kv">
+          <dt>教練協議</dt><dd>說明角色、保密範圍、費用、取消政策。範本會在創業工作坊提供</dd>
+          <dt>保密</dt><dd>連「某某是我的客戶」都要保密，除非對方同意</dd>
+          <dt>錄音同意</dt><dd>體驗客戶不需書面，但開始前一定要口頭告知用途並取得同意，同意後才錄音</dd>
+        </dl></div>
+        <div class="note">可以這樣說：「這段錄音只會用於我的口試與我自己的教練筆記，不會對外散布，也會保密。」</div>
+        <a class="faq-link" href="#faq" data-goto="faq" data-cat="找客戶">看「找客戶」相關問答 →</a>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-head"><h2>ACC 費用</h2><p>以 ICF 官網公告為準</p></div>
+      <div class="card scroll">
+        <table class="tbl">
+          <thead><tr><th>項目</th><th>ICF 會員</th><th>非會員</th></tr></thead>
+          <tbody>
+            <tr><td>ACC 申請費（含筆試）</td><td>175 USD</td><td>325 USD</td></tr>
+            <tr><td>三年續證費</td><td>175 USD</td><td>275 USD</td></tr>
+            <tr><td>筆試重考費</td><td>105 USD</td><td>105 USD</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-head"><h2>ICF 官方資料</h2></div>
+      <ul class="links">
+        <li><a class="link" href="https://coachingfederation.org/credentialing/" target="_blank" rel="noopener"><span class="t">ICF 認證總覽</span><span class="arr" aria-hidden="true">↗</span></a></li>
+        <li><a class="link" href="https://coachingfederation.org/credentialing/icf-credentials-overview/acc/" target="_blank" rel="noopener"><span class="t">ACC 認證說明</span><span class="arr" aria-hidden="true">↗</span></a></li>
+        <li><a class="link" href="https://coachingfederation.org/credentialing/prepare-for-icf-credential-application/experience-requirements/" target="_blank" rel="noopener"><span class="t">實務時數要求</span><span class="arr" aria-hidden="true">↗</span></a></li>
+        <li><a class="link" href="https://coachingfederation.org/credentialing/icf-credential-exams/acc-exam/" target="_blank" rel="noopener"><span class="t">ACC 筆試說明</span><span class="arr" aria-hidden="true">↗</span></a></li>
+        <li><a class="link" href="https://coachingfederation.org/wp-content/uploads/2024/12/icf-cs-acc-candidate-guide.pdf" target="_blank" rel="noopener"><span class="t">ACC 考生指南 PDF</span><span class="arr" aria-hidden="true">↗</span></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 問答 ============ -->
+  <section class="panel" id="p-faq" data-eye="Q &amp; A" data-title="快問快答" data-sub="輸入關鍵字，例如：回放、遲到、有償" hidden>
+    <div class="search">
+      <input id="q" type="search" placeholder="搜尋問題…" autocomplete="off" aria-label="搜尋問題">
+      <div class="chips" id="chips" role="group" aria-label="分類"></div>
+    </div>
+    <ul class="faq" id="faq"></ul>
+    <p class="empty" id="empty" hidden>找不到相關問題，可以在 LINE 群組提問，或到<a href="https://app.notion.com/p/baab733926b8835c84bf81018a4676ca?v=17fb733926b8833c9127085f3d6d3f06&source=copy_link" target="_blank" rel="noopener">課堂提問討論區</a>留言。</p>
+  </section>
+</div>
+
+
+<footer>
+  <img class="footer-logo" src="data:image/png;base64,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" alt="內在轉化教練學苑 Logo">
+  <div class="footer-academy">內在轉化教練學苑 · Turn Within Coaching Academy</div>
+  <p>本頁僅供學苑學員使用，請勿外傳</p>
+  <p>ICF 相關規定以 ICF 官網公告為準 · 最後更新 2026/10/13</p>
+</footer>
+
+
+<script>
+(function(){
+  var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+  /* ---------- tabs ---------- */
+  var tabs=['links','schedule','path','acc','faq'];
+  function show(t){
+    if(tabs.indexOf(t)<0)t='links';
+    tabs.forEach(function(x){document.getElementById('p-'+x).hidden=(x!==t)});
+    document.querySelectorAll('nav.tabs button').forEach(function(b){b.setAttribute('aria-selected',b.dataset.tab===t?'true':'false')});
+    var p=document.getElementById('p-'+t);
+    document.getElementById('ptitle').textContent=p.dataset.title;document.getElementById('peye').textContent=p.dataset.eye;
+    document.getElementById('psub').textContent=p.dataset.sub;
+  }
+  document.querySelectorAll('nav.tabs button').forEach(function(b){
+    b.addEventListener('click',function(){show(b.dataset.tab);try{history.replaceState(null,'','#'+b.dataset.tab)}catch(e){location.hash=b.dataset.tab}window.scrollTo(0,0)});
+  });
+  function go(t,anchor){show(t);try{history.replaceState(null,'','#'+t)}catch(e){}
+    var el=anchor&&document.getElementById(anchor);
+    if(el){var y=el.getBoundingClientRect().top+window.scrollY-(document.querySelector('.site-header').offsetHeight+12);window.scrollTo(0,y)}else window.scrollTo(0,0)}
+  document.addEventListener('click',function(e){var a=e.target.closest('[data-goto]');if(!a)return;e.preventDefault();if(a.dataset.cat)setCat(a.dataset.cat);go(a.dataset.goto,a.dataset.anchor)});
+  show((location.hash||'').replace('#',''));
+
+  /* ---------- copy pass ---------- */
+  document.getElementById('copyPass').addEventListener('click',function(){
+    var btn=this,txt='轉化式教練';
+    function ok(){btn.textContent='已複製';setTimeout(function(){btn.textContent='複製'},1600)}
+    function fallback(){var r=document.createRange();r.selectNodeContents(document.getElementById('pass'));var s=getSelection();s.removeAllRanges();s.addRange(r);btn.textContent='已選取，請長按複製'}
+    try{navigator.clipboard.writeText(txt).then(ok,fallback)}catch(e){fallback()}
+  });
+
+  /* ---------- supervision ---------- */
+  var SUP=[
+    ['10/20',[['Eileen','Alicia'],['Kuma','Rita']]],
+    ['10/27',{type:'off',t:'停課',d:'這週沒有課'}],
+    ['11/3',[['Keri','Daphne'],['Nancy','Niki']]],
+    ['11/10',[['Niki','Eileen'],['Alicia','Nancy']]],
+    ['11/17',[['Daphne','Kuma'],['Eileen','Joy']]],
+    ['11/24',[['Rita','Eileen'],['Kiki','Keri']]],
+    ['12/1',[['Kuma','Niki'],['Joy','Keri']]],
+    ['12/8',[['Daphne','Kiki'],['Niki','Kuma']]],
+    ['12/15',{type:'ev',t:'ICF 倫理課',w:'週二 11:00'}],
+    ['12/22',{type:'ev',t:'ICF ACC 筆試工作坊',w:'週二 11:00'}]
+  ];
+  var supEl=document.getElementById('sup');
+  function renderSup(){
+    var n='',asC=[],asB=[];
+    supEl.innerHTML=SUP.map(function(d){
+      if(!Array.isArray(d[1])){var e=d[1];
+        if(e.type==='off')return '<li class="other"><div class="date"><b>'+d[0]+'</b><span class="off">停課</span></div><div style="font-size:13.5px">'+e.d+'</div></li>';
+        return '<li><div class="date"><b>'+d[0]+'</b><span>'+e.w+'</span></div><div class="evt">'+e.t+'</div>'+(e.d?'<div class="evd">'+e.d+'</div>':'')+'</li>';}
+      return '<li><div class="date"><b>'+d[0]+'</b><span>週二 11:00</span></div>'+d[1].map(function(p,i){
+        var lab=i===0?'第一場':'第二場';
+        function nm(x,arr){var m=n&&x.toLowerCase()===n;if(m)arr.push(d[0]+' '+lab);return m?'<span class="hl">'+esc(x)+'</span>':esc(x)}
+        return '<div class="pair"><span class="k">'+lab+'</span><span class="who"><em>'+nm(p[0],asC)+'</em><span class="r">教練 →</span><em>'+nm(p[1],asB)+'</em></span></div>';
+      }).join('')+'</li>';
+    }).join('');
+  }
+  renderSup();
+
+  /* ---------- stages ---------- */
+  var STAGES=[
+    {n:'一',name:'轉化式教練基礎',range:'5/12 – 6/9　5 堂',done:true,rows:[
+      ['5/12','身心定錨','回到身體，回到當下，建立團體合約'],['5/19','開放感知','從聽懂內容，到感知背後的情緒與能量'],['5/26','肯定與欣賞','學習欣賞的結構，真正看見對方'],['6/2','教練對話的基本結構','讓臨在能在結構裡自然流動'],['6/9','整合','前四堂的基礎，如何在真實對話裡活出來']]},
+    {n:'二',name:'正念認知生活',range:'6/16 – 8/4　8 堂',done:true,note:'牛津大學正念基金會 MBCT-Life 課程。缺席超過 2 次無法取得證書，不與其他階段合併計算。',rows:[
+      ['W1','從自動導航中覺醒'],['W2','另一種存在的方式：身心同在'],['W3','匯聚散亂的心'],['W4','識別反應慣性'],['W5','與困難共處，容許並如其所是'],['W6','善巧地回應'],['7/26','實體一日止語','週日，台北'],['W7','怎樣最好地照顧自己的身心'],['W8','靜觀生活']]},
+    {n:'三',name:'轉化式教練方法與技能',range:'8/25 – 10/13　8 堂',done:true,rows:[
+      ['8/25','開啟教練對話','創造安全感，找到今天最想探索的主題'],['9/1','辨識對話方向','深化第一回應的能力'],['9/8','識別慣性','從頭腦的思考，走進身體的感知'],['9/15','內在部分','透過 Voice Dialogue，讓內在的聲音被聽見'],['9/22','啟發與價值觀','什麼對這個人真正重要'],['9/29','行動','把對話的收穫帶進生活'],['10/6','整合（一）','與 ICF 核心能力整合'],['10/13','整合（二）','完整走過一段教練對話的弧線']]},
+    {n:'四',name:'整合與認證',range:'10/20 – 12/15　9 堂',done:false,note:'七堂團體督導＋倫理課程與 ICF 筆試準備工作坊。督導配對見本頁上方。'}
+  ];
+  var stagesEl=document.getElementById('stages');
+  if(stagesEl)stagesEl.innerHTML=STAGES.map(function(s){
+    var body='';
+    if(s.note)body+='<div class="note">'+esc(s.note)+'</div>';
+    if(s.rows)body+='<ul class="rows">'+s.rows.map(function(r){return '<li><span class="dt">'+r[0]+'</span><span class="tp"><b>'+esc(r[1])+'</b>'+(r[2]?'<small>'+esc(r[2])+'</small>':'')+'</span></li>'}).join('')+'</ul>';
+    return '<details class="stage"'+(s.done?'':' open')+'><summary><span class="num">'+s.n+'</span><span class="st"><b>'+s.name+(s.done?' <span class="done">已完成</span>':' <span class="tag gold">進行中</span>')+'</b><span>'+s.range+'</span></span><span class="chev">⌄</span></summary><div class="body">'+body+'</div></details>';
+  }).join('');
+
+  /* ---------- checklist ---------- */
+  var CK=[
+    ['出席','一、三、四階出席至少 80%，缺席不超過 10 小時／4 堂','',['請假登記區','https://docs.google.com/spreadsheets/d/1Qg6XwdIbbYGVVz1_yV6c0D17LRbxvin2-Ujoy8laerc/edit?usp=sharing']],
+    ['心得分享','在 Google Classroom 分享學習心得，缺課補交課程心得','',['Google Classroom','https://classroom.google.com/w/ODYwNDQxMzkwMTk1/t/all']],
+    ['同儕對練','第三階段起至少 6 次擔任教練，盡量找不同夥伴，並填記錄表','',['同儕對練記錄表','https://classroom.google.com/c/ODYwNDQxMzkwMTk1/a/ODc4MDA5MDY3NTA0/details']],
+    ['一對一督導','三次教練對話錄音＋三次一對一督導','',['一對一督導說明（課表頁）','#prep']],
+    ['口試通過','三次督導就是三次口試機會，任一次通過即可','結業三關'],
+    ['真實客戶','兩位長期非教練客戶，各 coaching 5 次以上，並繳交紀錄報告','結業三關',['長期客戶記錄表（即將開放）','']],
+    ['結業對談','與 Natasha 進行一次結業對談','結業三關']
+  ];
+  document.getElementById('checks').innerHTML=CK.map(function(c,i){
+    return '<li><span class="ci">'+(i+1)+'</span><span><span class="t">'+c[0]+'</span>'+(c[2]?'<span class="key">'+c[2]+'</span>':'')+'<span class="d">'+c[1]+'</span>'+(c[3]?(c[3][1]==='#prep'?'<a class="ck-link" href="#schedule" data-goto="schedule" data-anchor="prep">'+c[3][0]+' →</a>':c[3][1]?'<a class="ck-link" href="'+c[3][1]+'" target="_blank" rel="noopener">'+c[3][0]+' ↗</a>':'<span class="ck-link off">'+c[3][0]+'</span>'):'')+'</span></li>';
+  }).join('');
+
+  /* ---------- faq ---------- */
+  var FAQ=[
+    ['認證與時數','一百小時從什麼時候開始算？','2026/5/12 起，同儕對練與對外客戶都算；之前的不能計入。','3-1'],
+    ['認證與時數','一百小時有期限嗎？','沒有。但申請前 18 個月內至少要有 25 小時。','2-3'],
+    ['認證與時數','這一百小時是全部免費的嗎？','相反，至少 75 小時要有償。但「有償」的定義很寬：收費（隨喜也算）、同儕互相教練、交換可公開的回饋都算。','3-1'],
+    ['認證與時數','同學互相對練算時數嗎？有上限嗎？','算，而且沒有上限。但不能拿來充當結業要求的兩位長期客戶。','3-1'],
+    ['認證與時數','一次 45 分鐘算一小時嗎？','不算，以實際時間計為 0.75 小時。','3-1'],
+    ['認證與時數','客戶臨時取消或爽約算嗎？','不算。','3-1'],
+    ['認證與時數','課堂上的團體督導算時數嗎？','擔任教練的那次算；擔任觀察員的堂次不算。','3-1'],
+    ['認證與時數','客戶名單要交給 ICF 嗎？','不用交，但 ICF 會抽查，所以名單一定要有。','3-1'],
+    ['認證與時數','學苑會幫我申請或團報嗎？','不會，需自行到 ICF 官網申請，詳見「ACC」分頁。學苑提供筆試準備工作坊與考古題。','2-3'],
+    ['認證與時數','筆試考什麼？','60 題單選，460／600 分及格。範疇：倫理 30%、教練定義與邊界 30%、核心能力與技巧 40%。第四階段有專門的準備工作坊。','2-3'],
+    ['認證與時數','筆試有中文嗎？','有簡體中文完整譯本，沒有繁體中文。',''],
+    ['認證與時數','筆試要另外付錢嗎？','不用，已含在申請費裡。只有重考才付 105 USD。第一次重考需等 14 天，之後每次等 30 天，12 個月內最多 6 次。','2-3'],
+    ['認證與時數','拿到 ACC 就一勞永逸了嗎？','不是，每三年要續證：40 個 CCEU 學分（含 3 學分倫理與 10 小時教練督導）並繳續證費。','2-3'],
+    ['認證與時數','之後還有更高階的課嗎？','ICF Level 2（對應 PCC），預計 2027 年開課。','1-6'],
+    ['認證與時數','一定要用學苑的時數紀錄表嗎？','不用，想用自己的表單也可以。','3-1'],
+    ['課程與督導','三、四階之間有休息嗎？','沒有。10/13 結束，10/20 就接上。','1-0'],
+    ['課程與督導','一對一督導跟誰約？怎麼約？','與 Natasha 約，預約連結會發在 LINE 群組。','1-5'],
+    ['課程與督導','督導前要準備什麼？','預約時間前三天寄出：20–60 分鐘的實作錄音檔、該次對話的逐字稿，以及想特別提問的問題。','1-5'],
+    ['課程與督導','逐字稿可以用 AI 轉嗎？','可以，但要自己全部看過，並分出說話者、帶時間標記。','1-5'],
+    ['課程與督導','三次督導和口試是什麼關係？','三次都是口試機會，請在三次之內通過。','1-5'],
+    ['課程與督導','口試沒過怎麼辦？','三次都沒過，可以加價補考。','1-5'],
+    ['課程與督導','口試過了就等於結業了嗎？','不是，結業共有七項條件，還包含兩位長期客戶的紀錄報告與一次結業對談。詳見「結業」分頁。','2-2'],
+    ['課程與督導','錄客戶對話要簽同意書嗎？','體驗客戶不需書面，但開始前一定要口頭告知用途並取得同意。','3-3'],
+    ['課程與督導','我可以免費被教練嗎？','可以，學苑提供兩種：學長姐各一次免費體驗（通關密碼「轉化式教練」），以及一次與 Natasha 的一對一（12/31 前預約）。連結在「連結」分頁。','5-3'],
+    ['課程與督導','課程有回放嗎？可以看多久？','有，在 Google Classroom，至少保存一年，可以下載。','5-2'],
+    ['課程與督導','同儕對練一定要交嗎？','要，是結業條件之一。至少 6 次擔任教練並填記錄表，課程結束後繳回。','4-5'],
+    ['課程與督導','一次同儕對練要多久？','行事曆 block 一小時：教練對話 30–40 分鐘，其餘時間互相回饋。對象在班上同學之間就好。','4-5'],
+    ['課程與督導','一定要開鏡頭嗎？','是，每堂課全程開啟。教練工作有很大一部分發生在非語言的層次。','5-1'],
+    ['出席與請假','遲到多久算遲到？','11:15 前到都不算。預期超過 15 分鐘，請填請假單並標註預計時間。','4-2'],
+    ['出席與請假','可以早退嗎？','13:30 準時下課離開不算早退；需要提早離開請填請假單。','4-2'],
+    ['出席與請假','沒到課要做什麼？請假單在哪？','填請假單。連結在本頁「連結」分頁的「請假登記區」，LINE 群記事本裡也有。','4-4'],
+    ['出席與請假','缺席幾次會影響證書？','正念課缺席超過 2 次；一、三、四階缺席超過 10 小時／4 堂。','4-3'],
+    ['出席與請假','缺席超過了怎麼辦？','可於明年繳費補課。','4-3'],
+    ['出席與請假','看回放算出席嗎？','不算。看回放是補內容，不補出席。','4-4'],
+    ['出席與請假','缺席後要做什麼才算補課？','兩步：① 看錄影 ② 繳交簡短課程心得。','4-4'],
+    ['出席與請假','作業遲交會怎樣？','須在第四階段最後一堂課前補齊，否則領不到結業證書。','4-5'],
+    ['找客戶','受訓中我可以怎麼介紹自己？','誠實寫「正在取得 ICF 認證中」。還沒拿到就不要寫 ACC，拿到了就要寫出來。','3-2'],
+    ['找客戶','我不好意思跟朋友收錢？','請朋友體驗並提供可公開的回饋，或隨喜讓對方決定金額，都算有償。','3-2'],
+    ['找客戶','去哪裡找對練夥伴？','FB 的 ICF 或 coaching 社團，用中文貼文就可以。也可以從同學、親友、自己的社群開始。','3-2'],
+    ['找客戶','可以找同一個人一直練嗎？','可以，但 ICF 要求至少 8 位不同客戶。','3-1'],
+    ['找客戶','教練協議範本哪裡拿？','創業工作坊會提供。','1-6']
+  ];
+  var cats=['全部','認證與時數','課程與督導','出席與請假','找客戶'],cat='全部';
+  var chipsEl=document.getElementById('chips');
+  chipsEl.innerHTML=cats.map(function(c){return '<button type="button" class="chip" aria-pressed="'+(c===cat)+'">'+c+'</button>'}).join('');
+  chipsEl.addEventListener('click',function(e){var b=e.target.closest('.chip');if(!b)return;cat=b.textContent;chipsEl.querySelectorAll('.chip').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});renderFaq()});
+  function setCat(c){cat=c;qEl.value='';chipsEl.querySelectorAll('.chip').forEach(function(x){var on=x.textContent===c;x.setAttribute('aria-pressed',on?'true':'false');if(on)chipsEl.scrollLeft=x.offsetLeft-chipsEl.offsetLeft-8});renderFaq()}
+  var qEl=document.getElementById('q');
+  function mark(s,q){s=esc(s);if(!q)return s;var i=s.toLowerCase().indexOf(esc(q).toLowerCase());if(i<0)return s;var L=esc(q).length;return s.slice(0,i)+'<mark>'+s.slice(i,i+L)+'</mark>'+s.slice(i+L)}
+  function renderFaq(){
+    var q=qEl.value.trim();
+    var list=FAQ.filter(function(f){return (cat==='全部'||f[0]===cat)&&(!q||(f[1]+f[2]).toLowerCase().indexOf(q.toLowerCase())>-1)});
+    document.getElementById('faq').innerHTML=list.map(function(f){
+      return '<li><details'+(q?' open':'')+'><summary>'+mark(f[1],q)+'</summary><div class="a">'+mark(f[2],q)+(f[3]?'<span class="ref">手冊 '+f[3]+'</span>':'')+'</div></details></li>';
+    }).join('');
+    document.getElementById('empty').hidden=list.length>0;
+  }
+  qEl.addEventListener('input',renderFaq);
+  renderFaq();
+})();
+</script>
+</body>
+</html>
